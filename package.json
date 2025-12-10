@@ -1,7 +1,7 @@
 {
   "name": "native-keyvault",
   "type": "module",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A simple cross platform native keyvault for storing secrets securely on your local machine. Supports Windows, macOS, and Linux with native encryption methods and optional fallback.",
   "license": "MIT",
   "homepage": "https://github.com/moshetanzer/native-keyvault#readme",
