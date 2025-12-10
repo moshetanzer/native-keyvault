@@ -3,6 +3,8 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync, chmodSync } from 'n
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import crypto from 'node:crypto';
+import fs from 'fs';
+import path from 'path';
 
 export class CredentialStore {
   private service: string;
@@ -108,41 +110,45 @@ export class CredentialStore {
     execSync(`security delete-generic-password -a "${account}" -s "${this.service}"`);
   }
 
-  private _saveWindows(account: string, password: string) {
-    const target = `${this.service}:${account}`;
-    execSync(`cmdkey /generic:"${target}" /user:"${account}" /pass:"${password}"`);
-  }
-
-  private _getWindows(account: string): string | null {
-    try {
-      const target = `${this.service}:${account}`;
-      const output = execSync(`cmdkey /list:"${target}"`, { encoding: 'utf8' });
-      
-      if (!output.includes(target)) return null;
-
-      const script = `
-$target = "${target}"
-$cred = [Windows.Security.Credentials.PasswordVault,Windows.Security.Credentials,ContentType=WindowsRuntime]::new()
-try {
-  $result = $cred.Retrieve($target, "${account}")
-  $result.RetrievePassword()
-  $result.Password
-} catch {
-  exit 1
+private _getFilePath(account: string) {
+  const dir = path.join(process.env.APPDATA || '.', 'keyvault');
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  return path.join(dir, `${this.service}-${account}.txt`);
 }
-`;
-      return execSync(`powershell -Command "${script.replace(/\n/g, ' ')}"`, { 
-        encoding: 'utf8' 
-      }).trim();
-    } catch {
-      return null;
-    }
-  }
 
-  private _deleteWindows(account: string) {
-    const target = `${this.service}:${account}`;
-    execSync(`cmdkey /delete:"${target}"`);
+private _saveWindows(account: string, password: string) {
+  const file = this._getFilePath(account);
+  const script = `
+$secure = ConvertTo-SecureString '${password}' -AsPlainText -Force
+$secure | ConvertFrom-SecureString | Set-Content '${file}'
+`;
+  execSync(`pwsh -NoProfile -Command "${script.replace(/"/g, '\\"')}"`);
+}
+
+private _getWindows(account: string): string | null {
+  const file = this._getFilePath(account);
+  if (!fs.existsSync(file)) return null;
+
+  const script = `
+$encrypted = Get-Content '${file}'
+$secure = ConvertTo-SecureString $encrypted
+[System.Runtime.InteropServices.Marshal]::PtrToStringAuto(
+  [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
+)
+`;
+  try {
+    return execSync(`pwsh -NoProfile -Command "${script.replace(/"/g, '\\"')}"`, {
+      encoding: 'utf8'
+    }).trim();
+  } catch {
+    return null;
   }
+}
+
+private _deleteWindows(account: string) {
+  const file = this._getFilePath(account);
+  if (fs.existsSync(file)) fs.unlinkSync(file);
+}
 
   private _hasSecretTool(): boolean {
     try { 
