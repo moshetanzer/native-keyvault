@@ -9,9 +9,12 @@
     "type": "git",
     "url": "git+https://github.com/moshetanzer/native-keyvault.git"
   },
-
+  "bin": {
+    "keyvault": "./dist/cli.mjs"
+  },
   "exports": {
     ".": "./dist/index.mjs",
+    "./cli": "./dist/cli.mjs",
     "./package.json": "./package.json"
   },
   "main": "./dist/index.mjs",
@@ -33,5 +36,8 @@
     "tsdown": "^0.17.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.15"
+  },
+  "dependencies": {
+    "commander": "^14.0.2"
   }
 }
