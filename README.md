@@ -28,16 +28,16 @@ macOS and Windows have native support built into the OS.
 ## Usage
 
 ```typescript
-import { CredentialStore } from 'native-keyvault';
+import { CredentialStore } from 'native-keyvault'
 
-const store = new CredentialStore('my-app');
+const store = new CredentialStore('my-app')
 
-store.save('user@example.com', 'my-secure-password');
+store.save('user@example.com', 'my-secure-password')
 
-const password = store.get('user@example.com');
-console.log(password);
+const password = store.get('user@example.com')
+console.log(password)
 
-store.delete('user@example.com');
+store.delete('user@example.com')
 ```
 
 ### Force Fallback Mode
@@ -45,7 +45,7 @@ store.delete('user@example.com');
 If you want to always use encrypted file storage instead of the native credential manager:
 
 ```typescript
-const store = new CredentialStore('my-app', { fallback: true });
+const store = new CredentialStore('my-app', { fallback: true })
 ```
 
 ## API
