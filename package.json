@@ -9,9 +9,6 @@
     "type": "git",
     "url": "git+https://github.com/moshetanzer/native-keyvault.git"
   },
-  "bin": {
-    "keyvault": "./dist/cli.mjs"
-  },
   "exports": {
     ".": "./dist/index.mjs",
     "./cli": "./dist/cli.mjs",
@@ -20,6 +17,9 @@
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
+  "bin": {
+    "keyvault": "./dist/cli.mjs"
+  },
   "files": [
     "dist"
   ],
@@ -28,16 +28,20 @@
     "dev": "tsdown --watch",
     "test": "vitest",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "pnpm run build"
-  },
-  "devDependencies": {
-    "@types/node": "^24.10.1",
-    "bumpp": "^10.3.2",
-    "tsdown": "^0.17.0",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.15"
+    "prepublishOnly": "pnpm run build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "commander": "^14.0.2"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^6.6.1",
+    "@types/node": "^24.10.1",
+    "bumpp": "^10.3.2",
+    "eslint": "^9.39.1",
+    "tsdown": "^0.17.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.15"
   }
 }
