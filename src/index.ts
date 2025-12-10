@@ -89,8 +89,7 @@ export class CredentialStore {
 
   private _saveMac(account: string, password: string) {
     execSync(
-      `security add-generic-password -a "${account}" -s "${this.service}" -w -U`,
-      { input: password }
+       `security add-generic-password -a "${account}" -s "${this.service}" -w "${password}" -U`
     );
   }
 
